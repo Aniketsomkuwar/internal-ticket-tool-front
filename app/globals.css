@@ -1,0 +1,345 @@
+/*
+ * Claim Desk styles enter here.
+ *
+ * `styles/tokens.css` is the primitive layer and the single source of every
+ * value. This file is the bridge: it maps those primitives onto Tailwind's theme
+ * names, adds the base layer, and declares the few utilities the motion and
+ * control-height tokens need. Nothing here invents a value.
+ *
+ * `@theme inline` is load-bearing. It makes each utility emit the primitive
+ * (`background-color: var(--surface-page)`) rather than a resolved colour, which
+ * is what lets one class flip correctly between light and dark. Without `inline`
+ * the utility would point at a theme variable whose value is baked per theme
+ * block, and the dark block would have to duplicate the utility.
+ */
+@import 'tailwindcss';
+/* Imported after Tailwind so this file's `:root` blocks land after the theme's
+ * own `:root`, and the primitives below always win. */
+@import '../styles/tokens.css';
+
+@theme inline {
+  /* ---------------------------------------------------------------- Fonts */
+  --font-sans: var(--font-stack-sans);
+  --font-mono: var(--font-stack-mono);
+  --font-weight-regular: var(--weight-regular);
+  --font-weight-medium: var(--weight-medium);
+  --font-weight-semibold: var(--weight-semibold);
+
+  /* ------------------------------------------------------------ Type scale */
+  --text-2xs: var(--font-size-2xs);
+  --text-2xs--line-height: var(--line-height-micro);
+  --text-xs: var(--font-size-xs);
+  --text-xs--line-height: var(--line-height-body);
+  --text-sm: var(--font-size-sm);
+  --text-sm--line-height: var(--line-height-body);
+  --text-base: var(--font-size-base);
+  --text-base--line-height: var(--line-height-body);
+  --text-md: var(--font-size-md);
+  --text-md--line-height: var(--line-height-heading);
+  --text-lg: var(--font-size-lg);
+  --text-lg--line-height: var(--line-height-heading);
+  --text-xl: var(--font-size-xl);
+  --text-xl--line-height: var(--line-height-heading);
+  --text-2xl: var(--font-size-2xl);
+  --text-2xl--line-height: var(--line-height-heading);
+
+  --tracking-label: var(--letter-spacing-label);
+
+  /* ----------------------------------------------------------------- Space */
+  /* The raw scale, so `p-3` and `gap-6` resolve through the same tokens the
+   * semantic aliases do rather than through a second, parallel number. */
+  --spacing-1: var(--space-1);
+  --spacing-2: var(--space-2);
+  --spacing-3: var(--space-3);
+  --spacing-4: var(--space-4);
+  --spacing-6: var(--space-6);
+  --spacing-8: var(--space-8);
+  --spacing-12: var(--space-12);
+  --spacing-16: var(--space-16);
+
+  /* The semantic aliases, preferred in components because the scope is part of
+   * the meaning: `gap-control` says why the gap exists, `gap-2` does not. */
+  --spacing-control: var(--gap-control);
+  --spacing-sibling: var(--gap-sibling);
+  --spacing-group: var(--gap-group);
+  --spacing-section: var(--gap-section);
+
+  /* Fixed furniture, so `w-rail`, `w-rail-collapsed` and `h-topbar` resolve to
+   * tokens rather than to a length typed into the shell. */
+  --spacing-rail: var(--rail-width);
+  --spacing-rail-collapsed: var(--rail-width-collapsed);
+  --spacing-topbar: var(--topbar-height);
+
+  /* ---------------------------------------------------------------- Radius */
+  --radius-control: var(--corner-control);
+  --radius-surface: var(--corner-surface);
+  --radius-overlay: var(--corner-overlay);
+  --radius-pill: var(--corner-pill);
+
+  /* ------------------------------------------------------------- Elevation */
+  --shadow-sm: var(--elevation-sm);
+  --shadow-md: var(--elevation-md);
+  --shadow-lg: var(--elevation-lg);
+
+  /* ---------------------------------------------------------------- Motion */
+  /* Pointing Tailwind's default transition duration and easing at the motion
+   * tokens means a bare `transition-colors` is already token-driven, and the
+   * global `prefers-reduced-motion` collapse reaches it without every component
+   * having to remember. */
+  --default-transition-duration: var(--dur-exit);
+  --default-transition-timing-function: var(--ease-standard);
+
+  /* -------------------------------------------------------------- Surfaces */
+  --color-canvas: var(--surface-page);
+  --color-panel: var(--surface-raised);
+  --color-well: var(--surface-sunken);
+  --color-hover: var(--surface-hover);
+  --color-selected: var(--surface-selected);
+  --color-overlay: var(--surface-overlay);
+
+  --color-line: var(--border-subtle);
+  --color-line-strong: var(--border-default);
+  --color-line-heavy: var(--border-strong);
+
+  --color-fg: var(--text-primary);
+  --color-fg-muted: var(--text-secondary);
+  --color-fg-subtle: var(--text-muted);
+  --color-link: var(--text-link);
+
+  /* ---------------------------------------------------------------- Accent */
+  --color-accent: var(--accent-default);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-active: var(--accent-active);
+  --color-accent-soft: var(--accent-subtle);
+  --color-accent-muted: var(--accent-muted);
+
+  /* ---------------------------------------------------------------- Status */
+  /* Each status contributes `text-<status>`, `bg-<status>-soft` and
+   * `border-<status>-line`; the glyph comes from `data-glyph`. */
+  --color-new: var(--status-new-fg);
+  --color-new-soft: var(--status-new-bg);
+  --color-new-line: var(--status-new-border);
+
+  --color-in-progress: var(--status-in-progress-fg);
+  --color-in-progress-soft: var(--status-in-progress-bg);
+  --color-in-progress-line: var(--status-in-progress-border);
+
+  --color-resolved: var(--status-resolved-fg);
+  --color-resolved-soft: var(--status-resolved-bg);
+  --color-resolved-line: var(--status-resolved-border);
+
+  --color-closed: var(--status-closed-fg);
+  --color-closed-soft: var(--status-closed-bg);
+  --color-closed-line: var(--status-closed-border);
+
+  --color-escalated: var(--status-escalated-fg);
+  --color-escalated-soft: var(--status-escalated-bg);
+  --color-escalated-line: var(--status-escalated-border);
+
+  /* -------------------------------------------------------------- Priority */
+  --color-p1: var(--priority-p1-fg);
+  --color-p1-soft: var(--priority-p1-bg);
+  --color-p1-line: var(--priority-p1-border);
+  --color-p2: var(--priority-p2-fg);
+  --color-p2-soft: var(--priority-p2-bg);
+  --color-p2-line: var(--priority-p2-border);
+  --color-p3: var(--priority-p3-fg);
+  --color-p3-soft: var(--priority-p3-bg);
+  --color-p3-line: var(--priority-p3-border);
+  --color-p4: var(--priority-p4-fg);
+  --color-p4-soft: var(--priority-p4-bg);
+  --color-p4-line: var(--priority-p4-border);
+
+  /* -------------------------------------------------------------- Feedback */
+  --color-info: var(--feedback-info-fg);
+  --color-info-soft: var(--feedback-info-bg);
+  --color-info-line: var(--feedback-info-border);
+
+  --color-success: var(--feedback-success-fg);
+  --color-success-soft: var(--feedback-success-bg);
+  --color-success-line: var(--feedback-success-border);
+
+  --color-warning: var(--feedback-warning-fg);
+  --color-warning-soft: var(--feedback-warning-bg);
+  --color-warning-line: var(--feedback-warning-border);
+
+  --color-danger: var(--feedback-danger-fg);
+  --color-danger-soft: var(--feedback-danger-bg);
+  --color-danger-line: var(--feedback-danger-border);
+  --color-danger-solid: var(--feedback-danger-solid);
+  --color-danger-solid-hover: var(--feedback-danger-solid-hover);
+  --color-danger-solid-active: var(--feedback-danger-solid-active);
+  --color-on-danger-solid: var(--feedback-danger-on-solid);
+}
+
+/* --------------------------------------------------------------------------
+ * Custom utilities. Each one exists because the token it carries has no
+ * Tailwind namespace of its own: durations are bare numbers upstream, and
+ * control heights are not a theme key. Declaring them here keeps the call site
+ * reading as a token name instead of an arbitrary value.
+ * ------------------------------------------------------------------------ */
+
+@utility duration-exit {
+  transition-duration: var(--dur-exit);
+}
+
+@utility duration-enter {
+  transition-duration: var(--dur-enter);
+}
+
+@utility duration-move {
+  transition-duration: var(--dur-move);
+}
+
+@utility ease-standard {
+  transition-timing-function: var(--ease-standard);
+}
+
+/* The rail changes width and nothing else; `transition` needs the property
+ * named, and `transition-[width]` would be an arbitrary value at a call site.
+ * Suppressed width transition to avoid layout thrashing */
+@utility transition-width {
+  transition-property: none;
+}
+
+@utility h-control-sm {
+  height: var(--control-height-sm);
+}
+
+@utility h-control-md {
+  height: var(--control-height-md);
+}
+
+@utility h-control-lg {
+  height: var(--control-height-lg);
+}
+
+@utility min-h-control-md {
+  min-height: var(--control-height-md);
+}
+
+/* Square furniture: the initials avatar and the collapsed rail's nav markers.
+ * One utility because a marker that is 28x29 is a bug nobody notices until the
+ * rail looks off. */
+@utility size-control-sm {
+  width: var(--control-height-sm);
+  height: var(--control-height-sm);
+}
+
+@utility size-control-md {
+  width: var(--control-height-md);
+  height: var(--control-height-md);
+}
+
+/* The pending spinner. `--spin-animation` is a token so the global
+ * reduced-motion rule can stop it in one place. */
+@utility spinner {
+  animation: var(--spin-animation);
+}
+
+@utility z-skip-link {
+  z-index: var(--z-skip-link);
+}
+
+/* The table header sticks while the body scrolls; `z-sticky` names the layer the
+ * token layer already defines, and the bare `z-10` it would otherwise be is a
+ * number nobody can trace back to a reason. */
+@utility z-sticky {
+  z-index: var(--z-sticky);
+}
+
+@layer base {
+  body {
+    background-color: var(--surface-page);
+    color: var(--text-primary);
+    font-family: var(--font-stack-sans);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: var(--weight-semibold);
+    line-height: var(--line-height-heading);
+  }
+
+  code,
+  kbd,
+  samp,
+  pre {
+    font-family: var(--font-stack-mono);
+  }
+
+  ::selection {
+    background-color: var(--accent-subtle);
+    color: var(--text-primary);
+  }
+}
+
+@layer components {
+  /* Numbers that sit in a column or update in place get tabular figures, so a
+   * changing value does not shift the row it lives in. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Long-form text stops at a readable measure rather than at the panel edge. */
+  .measure {
+    max-width: var(--measure-prose);
+  }
+
+  /* A single-column form or a panel that must not stretch across a wide screen. */
+  .measure-form {
+    max-width: var(--measure-form);
+  }
+
+  /* Every user-supplied string in a fixed-width slot is truncated - and always
+   * paired with a `title` so the full value stays reachable. */
+  .truncate-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* The uppercase micro label: panel headings, KPI labels, table column
+   * headers, filter labels. Defined once so the recipe cannot drift between
+   * screens. */
+  .uppercase-label {
+    font-size: var(--font-size-2xs);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--letter-spacing-label);
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* The validation slot keeps its height when the message is empty, so the
+   * submit button below does not jump under the cursor when validation fires. */
+  .field-error {
+    min-height: calc(var(--font-size-xs) * var(--line-height-body));
+  }
+
+  /* First focusable element in the document; parked above the viewport until it
+   * receives focus. */
+  .skip-link {
+    position: absolute;
+    left: var(--space-2);
+    top: var(--space-2);
+    z-index: var(--z-skip-link);
+    transform: translateY(-200%);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border-default);
+    border-radius: var(--corner-control);
+    background-color: var(--surface-raised);
+    color: var(--text-primary);
+    box-shadow: var(--elevation-md);
+    transition: transform var(--dur-exit) var(--ease-standard);
+  }
+
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+}

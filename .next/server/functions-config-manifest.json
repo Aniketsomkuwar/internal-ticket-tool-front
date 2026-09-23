@@ -1,0 +1,1 @@
+{"version":1,"functions":{"/admin/escalation":{},"/admin/projects":{},"/admin/users":{},"/admin":{},"/board":{},"/dashboard":{},"/admin/roles":{},"/org":{},"/portal/[reference]":{},"/portal/new":{},"/portal":{},"/profile/[idOrUsername]":{},"/profile":{},"/services":{},"/tickets":{},"/watchtower":{},"/forgot-password":{},"/":{},"/login":{},"/reset-password":{}}}

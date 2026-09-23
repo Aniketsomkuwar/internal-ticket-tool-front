@@ -1,0 +1,425 @@
+/*
+ * Claim Desk design tokens - the single primitive layer.
+ *
+ * Every colour, space, radius, shadow and duration in the product resolves to a
+ * name defined here. Nothing in `components/` or `app/` types a hex, a px value,
+ * a shadow or a duration, and no value is added at a call site; if a value is
+ * missing the token is added below instead.
+ *
+ * Two rules shape the file:
+ *
+ *  1. Light and dark are authored independently. Dark is not an inversion of
+ *     light: the accent lightens so it holds contrast against a near-black
+ *     ground, the status pairs are re-tuned rather than flipped (a flipped tint
+ *     lands muddy and fails contrast), and the shadows weaken because a lighter
+ *     surface already carries the elevation cue. Dark lives in exactly one
+ *     block, `:root[data-theme='dark']`, so there is no second palette to drift.
+ *
+ *  2. Names here are primitives, deliberately not Tailwind theme keys. Tailwind
+ *     emits its own theme keys into `:root` ahead of this file, so a primitive
+ *     that shared a name with a theme key (`--radius-md`, `--shadow-sm`,
+ *     `--text-xs`) would be re-declared as `var(--same-name)` and break itself
+ *     depending on cascade order. `app/globals.css` maps these primitives onto
+ *     the Tailwind theme names, which is where `text-xs`, `rounded-surface` and
+ *     `bg-canvas` come from.
+ *
+ * The status vocabulary is Claim Desk's own: new, in-progress, resolved, closed,
+ * escalated. It is not the vocabulary of the reference design document, which
+ * was written for another product.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* ---------------------------------------------------------------- Fonts */
+  /* `--font-plex-sans` / `--font-plex-mono` are set on <html> by next/font in
+   * app/layout.tsx. The stacks below are the fallbacks used before (and during)
+   * font swap. */
+  --font-stack-sans: var(--font-plex-sans), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-stack-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* ------------------------------------------------------------ Type scale */
+  /* 11 / 12 / 13 / 14 / 16 / 20 / 26 / 32. Adjacent roles never sit closer
+   * than about 1.15x, so hierarchy reads instead of requiring comparison. */
+  --font-size-2xs: 11px; /* uppercase micro labels only */
+  --font-size-xs: 12px; /* metadata, timestamps, table meta */
+  --font-size-sm: 13px; /* table cells, dense controls */
+  --font-size-base: 14px; /* body */
+  --font-size-md: 16px; /* lead paragraph, dialog titles */
+  --font-size-lg: 20px; /* section heading */
+  --font-size-xl: 26px; /* page heading */
+  --font-size-2xl: 32px; /* sign-in screen only */
+
+  /* Never below 1.3 for body copy; 1.65 for long-form text such as ticket
+   * messages and help text. */
+  --line-height-micro: 1.35;
+  --line-height-body: 1.5;
+  --line-height-prose: 1.65;
+  --line-height-heading: 1.25;
+
+  /* Tracking is a legibility cost on body copy and a legibility gain on short
+   * uppercase labels, so it is defined for the second case only. */
+  --letter-spacing-label: 0.06em;
+
+  /* Long-form text stops at a readable measure rather than at the panel edge. */
+  --measure-prose: 72ch;
+  /* A single-column form. Narrower than prose on purpose: a sign-in field the
+   * width of a paragraph invites a misread email address. */
+  --measure-form: 24rem;
+
+  /* ----------------------------------------------------------------- Space */
+  /* 4px base. Components reference the semantic aliases below; the raw scale is
+   * for internal padding inside a control, where no scope has to be named. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* The same 16px means different things at different scopes; naming the scope
+   * keeps that visible instead of inviting drift. */
+  --gap-control: var(--space-2); /* between a label and its input */
+  --gap-sibling: var(--space-4); /* between items in a list or row */
+  --gap-group: var(--space-6); /* between labelled groups in a panel */
+  --gap-section: var(--space-12); /* between major sections of a page */
+
+  --control-height-sm: 28px; /* dense table controls */
+  --control-height-md: 36px; /* default */
+  --control-height-lg: 44px; /* sign-in and touch targets */
+
+  /* ------------------------------------------------------------- Structure */
+  /* Fixed furniture. The shell rail and top bar are the two lengths a layout
+   * component would otherwise hardcode, and a hardcoded 15rem in the shell is
+   * exactly the value the table and page rhythm have to agree with. */
+  --rail-width: 15rem; /* expanded navigation rail */
+  --rail-width-collapsed: 3.25rem; /* icon-only rail */
+  --topbar-height: 3.25rem; /* aligns with the collapsed rail */
+
+  /* ---------------------------------------------------------------- Radius */
+  /* Mapped to element class, not to taste. */
+  --corner-control: 4px; /* inputs, badges, tags */
+  --corner-surface: 6px; /* buttons, cards, panels */
+  --corner-overlay: 10px; /* dialogs, popovers */
+  --corner-pill: 9999px; /* avatars, spinners */
+
+  /* ------------------------------------------------------------- Elevation */
+  /* Hairline borders do most of the separating; a shadow is for something that
+   * genuinely floats. */
+  --elevation-sm: 0 1px 2px 0 rgb(16 24 40 / 0.06);
+  --elevation-md: 0 4px 10px -2px rgb(16 24 40 / 0.1);
+  --elevation-lg: 0 12px 28px -8px rgb(16 24 40 / 0.18);
+
+  /* ---------------------------------------------------------------- Motion */
+  /* Exiting is always faster than entering, which reads as responsive rather
+   * than sluggish. One easing curve everywhere: no overshoot, ever. */
+  --dur-exit: 120ms;
+  --dur-enter: 180ms;
+  --dur-move: 220ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* The pending spinner is the one looping animation in the product. */
+  --spin-duration: 800ms;
+  --spin-animation: cd-spin var(--spin-duration) linear infinite;
+
+  /* -------------------------------------------------------------- Surfaces */
+  --surface-page: #f6f7f9; /* page ground */
+  --surface-raised: #ffffff; /* panels, tables, dialogs */
+  --surface-sunken: #eceff3; /* table striping, inline code, wells */
+  --surface-hover: #f1f3f7; /* row hover */
+  --surface-selected: #e8f0fb; /* active nav item, selected row */
+  --surface-overlay: rgb(15 21 28 / 0.55); /* dialog scrim */
+
+  --border-subtle: #e3e6eb; /* row divider */
+  --border-default: #ced3db; /* control boundary */
+  --border-strong: #98a2b3; /* active boundary */
+
+  --text-primary: #141a21; /* body */
+  --text-secondary: #4a5560; /* secondary */
+  --text-muted: #616a75; /* metadata - the lightest permitted for anything a user must read */
+  --text-link: #1a45c0;
+  --text-on-accent: #ffffff;
+
+  /* ----------------------------------------------------------------- Accent */
+  /* One accent, two jobs only: primary action and focus. Never decoration,
+   * never status, never emphasis. */
+  --accent-subtle: #eaf0fd; /* tinted ground behind an accent surface */
+  --accent-muted: #b9cdf6; /* selection and chart fills */
+  --accent-default: #1d4ed8;
+  --accent-hover: #1a45c0;
+  --accent-active: #163a9f;
+  --accent-fg: var(--text-on-accent); /* text drawn on the accent */
+
+  /* ----------------------------------------------------------------- Status */
+  /* Five families, each with its own foreground, background and border so
+   * contrast is tuned per surface rather than derived. Hue families are chosen
+   * to stay distinguishable under the common forms of colour blindness and to
+   * avoid colliding with the accent blue. Every status also carries a glyph,
+   * because colour is never the only signal. */
+  --status-new-fg: #0b5a6b;
+  --status-new-bg: #e6f4f7;
+  --status-new-border: #b7dbe3;
+  --status-new-glyph: '\25CB'; /* hollow circle */
+
+  --status-in-progress-fg: #8a4b08;
+  --status-in-progress-bg: #fdf3e3;
+  --status-in-progress-border: #e8cfa4;
+  --status-in-progress-glyph: '\25D0'; /* half-filled circle */
+
+  --status-resolved-fg: #146c36;
+  --status-resolved-bg: #e8f5ec;
+  --status-resolved-border: #b7dfc6;
+  --status-resolved-glyph: '\2713'; /* check mark */
+
+  --status-closed-fg: #475467;
+  --status-closed-bg: #f1f3f6;
+  --status-closed-border: #d3d8e0;
+  --status-closed-glyph: '\25A0'; /* filled square */
+
+  --status-escalated-fg: #9e2418;
+  --status-escalated-bg: #fdecea;
+  --status-escalated-border: #f0c2bb;
+  --status-escalated-glyph: '\25B2'; /* filled triangle */
+
+  /* --------------------------------------------------------------- Priority */
+  /* A priority is a severity on the same scale as a status, so priority borrows
+   * the status pairs instead of defining a second set of hues that would only
+   * make a dense table noisier. The written labels are fixed here as well:
+   * P1 Critical, P2 High, P3 Medium, P4 Low. */
+  --priority-p1-fg: var(--status-escalated-fg);
+  --priority-p1-bg: var(--status-escalated-bg);
+  --priority-p1-border: var(--status-escalated-border);
+  --priority-p1-glyph: var(--status-escalated-glyph);
+
+  --priority-p2-fg: var(--status-in-progress-fg);
+  --priority-p2-bg: var(--status-in-progress-bg);
+  --priority-p2-border: var(--status-in-progress-border);
+  --priority-p2-glyph: var(--status-in-progress-glyph);
+
+  --priority-p3-fg: var(--status-new-fg);
+  --priority-p3-bg: var(--status-new-bg);
+  --priority-p3-border: var(--status-new-border);
+  --priority-p3-glyph: var(--status-new-glyph);
+
+  --priority-p4-fg: var(--status-closed-fg);
+  --priority-p4-bg: var(--status-closed-bg);
+  --priority-p4-border: var(--status-closed-border);
+  --priority-p4-glyph: var(--status-closed-glyph);
+
+  /* --------------------------------------------------------------- Feedback */
+  /* Banners and inline validation, distinct from a ticket's status pill: these
+   * sit on a panel rather than inside a badge, so they get their own tokens even
+   * where the tuned value matches the status family that shares its meaning. */
+  --feedback-info-fg: #14508c;
+  --feedback-info-bg: #e8f1fb;
+  --feedback-info-border: #bcd4ee;
+  --feedback-info-glyph: 'i';
+
+  --feedback-success-fg: #146c36;
+  --feedback-success-bg: #e8f5ec;
+  --feedback-success-border: #b7dfc6;
+  --feedback-success-glyph: '\2713';
+
+  --feedback-warning-fg: #8a4b08;
+  --feedback-warning-bg: #fdf3e3;
+  --feedback-warning-border: #e8cfa4;
+  --feedback-warning-glyph: '!';
+
+  --feedback-danger-fg: #9e2418;
+  --feedback-danger-bg: #fdecea;
+  --feedback-danger-border: #f0c2bb;
+  --feedback-danger-glyph: '\25B2';
+
+  /* A destructive action is a solid fill, so it needs a fill and a colour that
+   * sits on that fill - a tinted danger would read as a warning. */
+  --feedback-danger-solid: #b42318;
+  --feedback-danger-solid-hover: #9a1e14;
+  --feedback-danger-solid-active: #82170f;
+  --feedback-danger-on-solid: #ffffff;
+
+  /* ------------------------------------------------------- Focus and layers */
+  /* Focus is never removed, only styled. */
+  --focus-ring: var(--accent-default);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  --z-sticky: 10;
+  --z-overlay: 40;
+  --z-dialog: 50;
+  --z-skip-link: 60;
+}
+
+/*
+ * Dark. Authored here on its own terms: lightened accent, re-tuned status pairs,
+ * weaker shadows. `app/layout.tsx` sets `data-theme` on <html> before first
+ * paint, so this block is the only dark palette in the product.
+ */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --surface-page: #0e1116;
+  --surface-raised: #161b22;
+  --surface-sunken: #0a0d12;
+  --surface-hover: #1c222b;
+  --surface-selected: #1d2c3f;
+  --surface-overlay: rgb(3 6 10 / 0.7);
+
+  --border-subtle: #232a33;
+  --border-default: #333d49;
+  --border-strong: #55616f;
+
+  --text-primary: #e7eaef;
+  --text-secondary: #b0b8c2;
+  --text-muted: #8d97a4; /* lightened from the light-mode value: metadata sits on near-black ground, and the accent-tinted selected row is lighter still */
+  --text-link: #7fb0e8;
+  --text-on-accent: #0b1620;
+
+  /* The accent lightens on dark so it holds contrast against a near-black
+   * ground. */
+  --accent-subtle: #14283e;
+  --accent-muted: #2c4d70;
+  --accent-default: #5b9be0;
+  --accent-hover: #74aae6;
+  --accent-active: #4a8ad0;
+  --accent-fg: var(--text-on-accent);
+
+  --status-new-fg: #6fc7d8;
+  --status-new-bg: #0d2630;
+  --status-new-border: #1f4553;
+
+  --status-in-progress-fg: #e0a45e;
+  --status-in-progress-bg: #2b1e0a;
+  --status-in-progress-border: #57401a;
+
+  --status-resolved-fg: #6fc48d;
+  --status-resolved-bg: #0d2418;
+  --status-resolved-border: #1e4630;
+
+  --status-closed-fg: #9aa4b1;
+  --status-closed-bg: #1c2128;
+  --status-closed-border: #333c46;
+
+  --status-escalated-fg: #ef8b7c;
+  --status-escalated-bg: #2d1512;
+  --status-escalated-border: #5c2c26;
+
+  --feedback-info-fg: #7fb0e8;
+  --feedback-info-bg: #101f33;
+  --feedback-info-border: #274366;
+
+  --feedback-success-fg: #6fc48d;
+  --feedback-success-bg: #0d2418;
+  --feedback-success-border: #1e4630;
+
+  --feedback-warning-fg: #e0a45e;
+  --feedback-warning-bg: #2b1e0a;
+  --feedback-warning-border: #57401a;
+
+  --feedback-danger-fg: #ef8b7c;
+  --feedback-danger-bg: #2d1512;
+  --feedback-danger-border: #5c2c26;
+
+  --feedback-danger-solid: #c93d34;
+  --feedback-danger-solid-hover: #d95a50;
+  --feedback-danger-solid-active: #ac3129;
+  --feedback-danger-on-solid: #ffffff;
+
+  /* Shadows weaken on dark: a lighter surface already carries the elevation
+   * cue, and a soft dark shadow on a dark ground reads as mud. */
+  --elevation-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --elevation-md: 0 4px 10px -2px rgb(0 0 0 / 0.5);
+  --elevation-lg: 0 14px 32px -10px rgb(0 0 0 / 0.6);
+}
+
+/* A glyph is decoration on top of a written label, so it is bound here as
+ * `content` rather than spelled inside a component: the character exists once,
+ * in the token layer, and a component names the status it is showing.
+ *
+ * `1em` keeps the glyph on the same optical width as the text beside it. */
+.glyph {
+  display: inline-block;
+  width: 1em;
+  flex: none;
+  text-align: center;
+  font-variant-numeric: normal;
+}
+
+.glyph::before {
+  content: '';
+}
+
+[data-glyph='new']::before {
+  content: var(--status-new-glyph);
+}
+[data-glyph='in-progress']::before {
+  content: var(--status-in-progress-glyph);
+}
+[data-glyph='resolved']::before {
+  content: var(--status-resolved-glyph);
+}
+[data-glyph='closed']::before {
+  content: var(--status-closed-glyph);
+}
+[data-glyph='escalated']::before {
+  content: var(--status-escalated-glyph);
+}
+[data-glyph='p1']::before {
+  content: var(--priority-p1-glyph);
+}
+[data-glyph='p2']::before {
+  content: var(--priority-p2-glyph);
+}
+[data-glyph='p3']::before {
+  content: var(--priority-p3-glyph);
+}
+[data-glyph='p4']::before {
+  content: var(--priority-p4-glyph);
+}
+[data-glyph='info']::before {
+  content: var(--feedback-info-glyph);
+}
+[data-glyph='success']::before {
+  content: var(--feedback-success-glyph);
+}
+[data-glyph='warning']::before {
+  content: var(--feedback-warning-glyph);
+}
+[data-glyph='danger']::before {
+  content: var(--feedback-danger-glyph);
+}
+
+/* One looping animation, and the keyframes it needs. */
+@keyframes cd-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/*
+ * One global rule collapses every duration rather than asking each component to
+ * opt in, so a component added later inherits the protection instead of
+ * silently escaping it. Durations collapse to 1ms rather than 0 so
+ * `transitionend`-driven logic still fires. The spinner stops outright - a
+ * loop is the one motion a preference for reduced motion is asking about - while
+ * `aria-busy` and the written loading label keep carrying the state.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-exit: 1ms;
+    --dur-enter: 1ms;
+    --dur-move: 1ms;
+    --spin-animation: none;
+  }
+}
+
+/* Focus is never removed, only styled: 2px ring at 2px offset, globally. Mouse
+ * users do not get the ring; the element still receives focus. */
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
