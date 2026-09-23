@@ -131,11 +131,6 @@ export function LoginForm({ googleError = null }: LoginFormProps) {
 
       {/* Two ways in, one of them: the divider is a written word rather than a
           rule with nothing on it, because a bare line reads as a page break. */}
-      <div className="flex items-center gap-control" role="separator" aria-orientation="horizontal">
-        <span className="flex-1 border-t border-line" />
-        <span className="text-xs text-fg-subtle">or</span>
-        <span className="flex-1 border-t border-line" />
-      </div>
 
       <Field
         label="Email address"

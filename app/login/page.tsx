@@ -50,8 +50,7 @@ export default async function LoginPage({
         <header className="flex flex-col gap-control">
           <h1 className="text-2xl text-fg">Claim Desk</h1>
           <p className="text-sm text-fg-muted">
-            Sign in with your work email address. There is no self-sign-up - an administrator creates
-            the account.
+            Sign in with your work email address.
           </p>
         </header>
 
