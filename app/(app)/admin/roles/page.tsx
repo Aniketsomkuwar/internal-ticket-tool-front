@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { getSessionState, fetchAsCaller } from '../../../../lib/session';
 import { PermissionDenied, ErrorState } from '../../../../components/data-table/states';
 import { RolesClient } from './roles-client';
-import type { CustomRoleDTO } from '@/shared';
+import type { CustomRoleDTO } from '@/shared/index';
 
 export const metadata: Metadata = { title: 'Roles & Fine-Grained Permissions — Claim Desk' };
 

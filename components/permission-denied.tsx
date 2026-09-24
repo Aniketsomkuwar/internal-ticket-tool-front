@@ -1,4 +1,4 @@
-import { PERMISSION_LABELS, type Permission } from '@/shared';
+import { PERMISSION_LABELS, type Permission } from '@/shared/index';
 
 import { cn } from '../lib/cn';
 

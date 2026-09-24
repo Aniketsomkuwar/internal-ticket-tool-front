@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, type FormEvent } from 'react';
-import { forgotPasswordSchema } from '@/shared';
+import { forgotPasswordSchema } from '@/shared/index';
 
 import { browserFetch, UNREACHABLE_MESSAGE } from '../../lib/api';
 import { Alert } from '../../components/ui/alert';

@@ -1,4 +1,4 @@
-import { isApiErrorBody, type ApiErrorBody } from '@/shared';
+import { isApiErrorBody, type ApiErrorBody } from '@/shared/index';
 
 /**
  * The one way the web app talks to the Claim Desk API.

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { resetPasswordSchema } from '@/shared';
+import { resetPasswordSchema } from '@/shared/index';
 
 import { ResetPasswordForm } from './reset-password-form';
 import { ErrorState } from '../../components/data-table/states';

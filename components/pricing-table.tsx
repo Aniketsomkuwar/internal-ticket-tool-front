@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import type { PricingServiceType } from '@/shared';
+import type { PricingServiceType } from '@/shared/index';
 
 export interface PricingItemView {
   id: string;

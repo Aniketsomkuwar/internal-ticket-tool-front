@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState, type ReactNode } from 'react';
-import type { Permission, Role } from '@/shared';
+import type { Permission, Role } from '@/shared/index';
 
 import { browserFetch } from '../../lib/api';
 import { cn } from '../../lib/cn';

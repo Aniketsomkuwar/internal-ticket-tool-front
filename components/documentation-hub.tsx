@@ -5,7 +5,7 @@ import { CopyButton } from './copy-button';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Select } from './ui/select';
-import { LINK_KINDS, type LinkKind } from '@/shared';
+import { LINK_KINDS, type LinkKind } from '@/shared/index';
 import { ExternalLink, Plus, Trash2, PenTool, Globe, Server, FileText, MonitorSmartphone, LayoutDashboard, Link2 } from 'lucide-react';
 
 export interface HubLinkItem {

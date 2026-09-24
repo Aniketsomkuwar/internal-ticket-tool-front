@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import type { EventUrgency, EventStatus } from '@/shared';
+import type { EventUrgency, EventStatus } from '@/shared/index';
 
 export interface TimelineEventItem {
   id: string;

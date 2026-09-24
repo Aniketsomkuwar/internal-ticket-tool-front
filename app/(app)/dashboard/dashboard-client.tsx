@@ -7,7 +7,7 @@ import { Select } from '../../../components/ui/select';
 import { Button } from '../../../components/ui/button';
 import { Plus, Download, ArrowUpRight, Star, ChevronDown, ChevronRight } from 'lucide-react';
 import * as XLSX from 'xlsx';
-import { PRIORITY_LABELS } from '@/shared';
+import { PRIORITY_LABELS } from '@/shared/index';
 
 interface DashboardData {
   period: string;

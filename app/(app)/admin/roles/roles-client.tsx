@@ -10,7 +10,7 @@ import {
   type CustomRoleDTO,
   type Permission,
   type Role,
-} from '@/shared';
+} from '@/shared/index';
 import { Button } from '../../../../components/ui/button';
 import { Input } from '../../../../components/ui/input';
 import { Alert } from '../../../../components/ui/alert';

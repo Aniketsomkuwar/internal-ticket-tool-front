@@ -1,5 +1,5 @@
 import React from 'react';
-import { PRIORITY_LABELS, type Priority } from '@/shared';
+import { PRIORITY_LABELS, type Priority } from '@/shared/index';
 
 export function PriorityBadge({ priority }: { priority: Priority | string }) {
   const p = priority as Priority;

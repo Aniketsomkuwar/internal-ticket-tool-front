@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ROLE_LABELS } from '@/shared';
+import { ROLE_LABELS } from '@/shared/index';
 
 import { ErrorState, EmptyState, PermissionDenied } from '../../components/data-table/states';
 import { TBody, TD, TH, THead, TR, Table, TableRegion } from '../../components/data-table/table';

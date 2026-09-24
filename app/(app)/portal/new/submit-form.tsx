@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { PRIORITIES, PRIORITY_LABELS, TICKET_TYPES, type Priority, type TicketType } from '@/shared';
+import { PRIORITIES, PRIORITY_LABELS, TICKET_TYPES, type Priority, type TicketType } from '@/shared/index';
 import { Button } from '../../../../components/ui/button';
 import { Input } from '../../../../components/ui/input';
 import { Select } from '../../../../components/ui/select';

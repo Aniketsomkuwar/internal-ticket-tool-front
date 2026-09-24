@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { ROLE_LABELS } from '@/shared';
+import { ROLE_LABELS } from '@/shared/index';
 import type { ReactNode } from 'react';
 
 import { ErrorState } from '../../components/data-table/states';

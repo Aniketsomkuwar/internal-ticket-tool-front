@@ -6,7 +6,7 @@ import {
   type ApiErrorBody,
   type Permission,
   type Role,
-} from '@/shared';
+} from '@/shared/index';
 
 import { serverFetch, type ApiResult, type ServerFetchOptions } from './api';
 

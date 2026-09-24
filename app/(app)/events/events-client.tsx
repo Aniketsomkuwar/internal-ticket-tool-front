@@ -6,7 +6,7 @@ import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Select } from '../../../components/ui/select';
 import { Alert } from '../../../components/ui/alert';
-import { EVENT_TYPES, type EventType } from '@/shared';
+import { EVENT_TYPES, type EventType } from '@/shared/index';
 
 export interface EventsClientProps {
   initialEvents: TimelineEventItem[];

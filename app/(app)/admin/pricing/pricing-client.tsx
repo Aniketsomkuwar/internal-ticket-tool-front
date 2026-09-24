@@ -6,7 +6,7 @@ import { Button } from '../../../../components/ui/button';
 import { Input } from '../../../../components/ui/input';
 import { Select } from '../../../../components/ui/select';
 import { Alert } from '../../../../components/ui/alert';
-import { PRICING_SERVICE_TYPES, type PricingServiceType } from '@/shared';
+import { PRICING_SERVICE_TYPES, type PricingServiceType } from '@/shared/index';
 
 export interface AdminPricingClientProps {
   projects: Array<{ id: string; name: string }>;

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
-import { loginSchema } from '@/shared';
+import { loginSchema } from '@/shared/index';
 
 import { browserFetch, UNREACHABLE_MESSAGE } from '../../lib/api';
 import { Alert } from '../../components/ui/alert';

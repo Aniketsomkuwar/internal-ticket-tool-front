@@ -7,7 +7,7 @@ import { StatusBadge, PriorityBadge } from '../../../components/badges';
 import { Button } from '../../../components/ui/button';
 import { Select } from '../../../components/ui/select';
 import { Alert } from '../../../components/ui/alert';
-import { type Priority } from '@/shared';
+import { type Priority } from '@/shared/index';
 
 export interface ConsoleTicketItem {
   id: string;

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { ROLE_LABELS, ROLES, type Role } from '@/shared';
+import { ROLE_LABELS, ROLES, type Role } from '@/shared/index';
 
 import { ErrorState, PermissionDenied } from '../../../components/data-table/states';
 import { TBody, TD, TH, THead, TR, Table, TableRegion } from '../../../components/data-table/table';

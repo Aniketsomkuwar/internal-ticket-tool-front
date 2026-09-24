@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Circle, PlayCircle, CheckCircle2, Loader2 } from 'lucide-react';
-import { PRIORITY_LABELS } from '@/shared';
+import { PRIORITY_LABELS } from '@/shared/index';
 import { TaskDetailModal } from './task-detail-modal';
 import type { TaskItem } from '../app/(app)/board/board-client';
 

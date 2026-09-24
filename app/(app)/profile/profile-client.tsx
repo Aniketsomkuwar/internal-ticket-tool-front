@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ROLE_LABELS, PERMISSION_LABELS, type Role, type Permission } from '@/shared';
+import { ROLE_LABELS, PERMISSION_LABELS, type Role, type Permission } from '@/shared/index';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Alert } from '../../../components/ui/alert';

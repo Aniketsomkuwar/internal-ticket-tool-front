@@ -1,4 +1,4 @@
-import type { Permission } from '@/shared';
+import type { Permission } from '@/shared/index';
 import type { LucideIcon } from 'lucide-react';
 import {
   Home,
