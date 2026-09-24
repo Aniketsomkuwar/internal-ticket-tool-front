@@ -35,6 +35,12 @@ export interface TaskItem {
   blockedByIds?: string[];
   acceptanceCriteria?: Array<{ text: string; done: boolean }>;
   type?: string;
+  featureChecklist?: {
+    figma?: boolean;
+    development?: boolean;
+    testing?: boolean;
+    deployed?: boolean;
+  };
 }
 
 interface BoardClientProps {
@@ -112,47 +118,115 @@ export function BoardClient({
 
   // Drag and Drop (desktop HTML5)
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
+  const [dropIndicator, setDropIndicator] = useState<{
+    column: 'backlog' | 'todo' | 'in-progress' | 'testing' | 'deployed';
+    index: number;
+  } | null>(null);
 
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
     e.dataTransfer.setData('text/plain', taskId);
+    e.dataTransfer.effectAllowed = 'move';
     setDraggedTaskId(taskId);
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = async (e: React.DragEvent, targetColumn: 'backlog' | 'todo' | 'in-progress' | 'testing' | 'deployed') => {
-    e.preventDefault();
-    const taskId = e.dataTransfer.getData('text/plain') || draggedTaskId;
-    if (!taskId) return;
+  const handleDragEnd = () => {
     setDraggedTaskId(null);
-    await executeMove(taskId, targetColumn);
+    setDropIndicator(null);
   };
 
-  const executeMove = async (taskId: string, targetColumn: 'backlog' | 'todo' | 'in-progress' | 'testing' | 'deployed') => {
+  const handleColumnDragOver = (
+    e: React.DragEvent,
+    colKey: 'backlog' | 'todo' | 'in-progress' | 'testing' | 'deployed'
+  ) => {
+    e.preventDefault();
+    if (!draggedTaskId) return;
+    const cards = board[colKey] || [];
+    setDropIndicator({ column: colKey, index: cards.length });
+  };
+
+  const handleCardDragOver = (
+    e: React.DragEvent,
+    colKey: 'backlog' | 'todo' | 'in-progress' | 'testing' | 'deployed',
+    cardIndex: number
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!draggedTaskId) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const midY = rect.top + rect.height / 2;
+    const targetIdx = e.clientY < midY ? cardIndex : cardIndex + 1;
+    setDropIndicator({ column: colKey, index: targetIdx });
+  };
+
+  const handleDrop = async (
+    e: React.DragEvent,
+    targetColumn: 'backlog' | 'todo' | 'in-progress' | 'testing' | 'deployed'
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const taskId = e.dataTransfer.getData('text/plain') || draggedTaskId;
+    const indicator = dropIndicator;
+    setDraggedTaskId(null);
+    setDropIndicator(null);
+    if (!taskId) return;
+
+    let targetIndex = board[targetColumn]?.length ?? 0;
+    if (indicator && indicator.column === targetColumn) {
+      targetIndex = indicator.index;
+    }
+
+    await executeMove(taskId, targetColumn, targetIndex);
+  };
+
+  const executeMove = async (
+    taskId: string,
+    targetColumn: 'backlog' | 'todo' | 'in-progress' | 'testing' | 'deployed',
+    targetPosition?: number
+  ) => {
     if (!canWrite) return;
     setIsMoving(true);
     setErrorMsg(null);
 
     // Optimistically update
     let movedTask: TaskItem | null = null;
-    const nextBoard = { ...board };
+    let fromColumn: string | null = null;
+    let fromIndex: number = -1;
+
+    const nextBoard: Record<'backlog' | 'todo' | 'in-progress' | 'testing' | 'deployed', TaskItem[]> = {
+      backlog: [...(board.backlog || [])],
+      todo: [...(board.todo || [])],
+      'in-progress': [...(board['in-progress'] || [])],
+      testing: [...(board.testing || [])],
+      deployed: [...(board.deployed || [])],
+    };
+
     for (const col of Object.keys(nextBoard) as Array<'backlog' | 'todo' | 'in-progress' | 'testing' | 'deployed'>) {
       const idx = nextBoard[col].findIndex((t) => t.id === taskId);
-      const found = nextBoard[col][idx];
-      if (found) {
+      if (idx !== -1 && nextBoard[col][idx]) {
+        fromColumn = col;
+        fromIndex = idx;
+        const found = nextBoard[col][idx]!;
         movedTask = { ...found, column: targetColumn };
-        nextBoard[col] = nextBoard[col].filter((t) => t.id !== taskId);
+        nextBoard[col].splice(idx, 1);
         break;
       }
     }
 
-    if (movedTask) {
-      nextBoard[targetColumn] = [...nextBoard[targetColumn], movedTask];
-      setBoard(nextBoard);
-      mutate(nextBoard);
+    if (!movedTask) {
+      setIsMoving(false);
+      return;
     }
+
+    let insertAt = targetPosition !== undefined ? targetPosition : nextBoard[targetColumn].length;
+    // If reordering within the same column and moved down, adjust index because element was removed before it
+    if (fromColumn === targetColumn && fromIndex !== -1 && fromIndex < insertAt) {
+      insertAt = Math.max(0, insertAt - 1);
+    }
+    insertAt = Math.max(0, Math.min(insertAt, nextBoard[targetColumn].length));
+
+    nextBoard[targetColumn].splice(insertAt, 0, movedTask);
+    setBoard(nextBoard);
+    mutate(nextBoard);
 
     try {
       const res = await fetch(`/api/tasks/${taskId}/move`, {
@@ -160,7 +234,7 @@ export function BoardClient({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           column: targetColumn,
-          position: nextBoard[targetColumn].length - 1,
+          position: insertAt,
         }),
       });
 
@@ -173,10 +247,7 @@ export function BoardClient({
       setTimeout(() => setSuccessMsg(null), 3000);
     } catch (err: any) {
       setErrorMsg(err.message || 'Failed to move task.');
-      // Revert from server
-      if (currentProjectId) {
-        router.refresh();
-      }
+      mutate(board);
     } finally {
       setIsMoving(false);
       setTouchMenuTaskId(null);
@@ -316,19 +387,20 @@ export function BoardClient({
       {errorMsg ? <Alert tone="error" title="Movement Error">{errorMsg}</Alert> : null}
       {successMsg ? <Alert tone="success" title="Success">{successMsg}</Alert> : null}
 
-      {/* 4-Column Board Canvas */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 flex-1 min-h-[500px] items-start">
-        {!board ? (
-          <div className="col-span-1 md:col-span-4 flex items-center justify-center min-h-[400px]">
-            <Loader2 className="size-8 animate-spin text-fg-subtle" />
-          </div>
-        ) : (
-          COLUMNS.map((col) => {
-            const cards = board[col.key] || [];
+      {/* 5-Column Board Canvas in a single row */}
+      <div className="w-full overflow-x-auto pb-4 flex-1">
+        <div className="grid grid-cols-5 gap-3 min-w-[1050px] xl:min-w-0 items-start min-h-[550px]">
+          {!board ? (
+            <div className="col-span-5 flex items-center justify-center min-h-[400px]">
+              <Loader2 className="size-8 animate-spin text-fg-subtle" />
+            </div>
+          ) : (
+            COLUMNS.map((col) => {
+              const cards = board[col.key] || [];
             return (
             <div
               key={col.key}
-              onDragOver={handleDragOver}
+              onDragOver={(e) => handleColumnDragOver(e, col.key)}
               onDrop={(e) => handleDrop(e, col.key)}
               className="flex flex-col rounded-surface border border-line bg-panel p-3 h-full min-h-[400px] transition-colors"
             >
@@ -343,100 +415,136 @@ export function BoardClient({
               </div>
 
               {/* Cards List */}
-              <div className="flex flex-col gap-2.5 flex-1 overflow-y-auto">
+              <div className="flex flex-col gap-2 flex-1 overflow-y-auto min-h-[140px]">
                 {cards.length === 0 ? (
-                  <p className="text-center text-[11px] text-fg-subtle py-8">No tasks</p>
+                  <div className="flex flex-col items-center justify-center flex-1 py-8">
+                    {dropIndicator?.column === col.key ? (
+                      <div className="w-full h-10 border-2 border-dashed border-indigo-500/60 bg-indigo-500/10 rounded flex items-center justify-center text-[10px] text-indigo-400 font-medium">
+                        Drop task here
+                      </div>
+                    ) : (
+                      <p className="text-center text-[11px] text-fg-subtle">No tasks</p>
+                    )}
+                  </div>
                 ) : (
-                  cards.map((task) => {
+                  cards.map((task, idx) => {
                     const hasSubtasks = task.subtaskCount > 0;
                     const percent = hasSubtasks ? Math.round((task.completedSubtaskCount / task.subtaskCount) * 100) : 0;
                     const isFullyDone = hasSubtasks && percent === 100 && task.column !== 'deployed';
+                    const showDropBefore = dropIndicator?.column === col.key && dropIndicator?.index === idx;
+                    const showDropAfter = dropIndicator?.column === col.key && dropIndicator?.index === cards.length && idx === cards.length - 1;
 
                     return (
-                      <div
-                        key={task.id}
-                        draggable={canWrite}
-                        onDragStart={(e) => handleDragStart(e, task.id)}
-                        onClick={() => setSelectedTask(task)}
-                        className={`group rounded border ${isFullyDone ? 'border-emerald-500/30 bg-emerald-500/[0.02]' : 'border-line bg-surface'} p-3 shadow-sm hover:border-line-strong cursor-pointer transition-all flex flex-col gap-2 relative overflow-hidden`}
-                      >
-                        {hasSubtasks && !isFullyDone && (
-                          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-line-strong/30">
-                            <div className="h-full bg-indigo-500 transition-all duration-300" style={{ width: `${percent}%` }} />
-                          </div>
+                      <React.Fragment key={task.id}>
+                        {showDropBefore && (
+                          <div className="h-1 bg-indigo-500 rounded-full shadow-md shadow-indigo-500/50 my-1 animate-pulse transition-all" />
                         )}
-                        {isFullyDone && (
-                          <div className="absolute top-0 right-0 bg-emerald-500/10 border-b border-l border-emerald-500/20 text-emerald-500 text-[9px] uppercase font-bold px-1.5 py-0.5 rounded-bl">
-                            Ready
-                          </div>
-                        )}
-                        <div className="flex items-start justify-between gap-1.5 mt-1">
-                          <h3 className="text-xs font-semibold text-fg leading-snug pr-8">{task.title}</h3>
-                        <PriorityBadge priority={task.priority} />
-                      </div>
+                        <div
+                          draggable={canWrite}
+                          onDragStart={(e) => handleDragStart(e, task.id)}
+                          onDragEnd={handleDragEnd}
+                          onDragOver={(e) => handleCardDragOver(e, col.key, idx)}
+                          onClick={() => setSelectedTask(task)}
+                          className={`group rounded border ${isFullyDone ? 'border-emerald-500/30 bg-emerald-500/[0.02]' : 'border-line bg-surface'} p-3 shadow-sm hover:border-line-strong cursor-pointer transition-all flex flex-col gap-2 relative overflow-hidden`}
+                        >
+                          {hasSubtasks && !isFullyDone && (
+                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-line-strong/30">
+                              <div className="h-full bg-indigo-500 transition-all duration-300" style={{ width: `${percent}%` }} />
+                            </div>
+                          )}
+                          {isFullyDone && (
+                            <div className="absolute top-0 right-0 bg-emerald-500/10 border-b border-l border-emerald-500/20 text-emerald-500 text-[9px] uppercase font-bold px-1.5 py-0.5 rounded-bl">
+                              Ready
+                            </div>
+                          )}
+                          <div className="flex items-start justify-between gap-1.5 mt-1">
+                            <h3 className="text-xs font-semibold text-fg leading-snug pr-8">{task.title}</h3>
+                          <PriorityBadge priority={task.priority} />
+                        </div>
 
-                      {task.isRiskSpike ? (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 font-medium w-fit">
-                          Risk Spike
-                        </span>
-                      ) : null}
-
-                      {task.blockedByIds && task.blockedByIds.length > 0 ? (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30 font-medium w-fit">
-                          Blocked ({task.blockedByIds.length})
-                        </span>
-                      ) : null}
-
-                      {task.description ? (
-                        <p className="text-[11px] text-fg-muted line-clamp-2">{task.description}</p>
-                      ) : null}
-
-                      <div className="flex items-center justify-between text-[10px] text-fg-subtle pt-1 border-t border-line/50">
-                        <span>{task.assigneeName || 'Unassigned'}</span>
-                        {task.subtaskCount > 0 ? (
-                          <span className="font-mono bg-well px-1.5 py-0.5 rounded border border-line">
-                            {task.completedSubtaskCount}/{task.subtaskCount} Subtasks
-                          </span>
-                        ) : task.acceptanceCriteria && task.acceptanceCriteria.length > 0 ? (
-                          <span className="font-mono">
-                            {task.acceptanceCriteria.filter((c) => c.done).length}/{task.acceptanceCriteria.length} AC
+                        {task.isRiskSpike ? (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 font-medium w-fit">
+                            Risk Spike
                           </span>
                         ) : null}
-                      </div>
 
-                      <div className="flex items-center justify-between pt-1 mt-1 border-t border-line/40">
-                        {touchMenuTaskId === task.id ? (
-                          <div className="flex flex-wrap gap-1 w-full bg-well p-1 rounded">
-                            {COLUMNS.filter((c) => c.key !== task.column).map((target) => (
+                        {task.blockedByIds && task.blockedByIds.length > 0 ? (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30 font-medium w-fit">
+                            Blocked ({task.blockedByIds.length})
+                          </span>
+                        ) : null}
+
+                        {task.description ? (
+                          <p className="text-[11px] text-fg-muted line-clamp-2 leading-relaxed">{task.description}</p>
+                        ) : null}
+
+                        {task.featureChecklist ? (
+                          <div className="flex items-center gap-1 text-[9px] flex-wrap pt-0.5">
+                            <span className={`px-1 py-0.5 rounded font-mono flex items-center gap-0.5 ${task.featureChecklist.figma ? 'text-purple-400 bg-purple-500/15 border border-purple-500/30' : 'text-fg-subtle bg-well opacity-50'}`}>
+                              {task.featureChecklist.figma ? '✓' : '○'} Figma
+                            </span>
+                            <span className={`px-1 py-0.5 rounded font-mono flex items-center gap-0.5 ${task.featureChecklist.development ? 'text-blue-400 bg-blue-500/15 border border-blue-500/30' : 'text-fg-subtle bg-well opacity-50'}`}>
+                              {task.featureChecklist.development ? '✓' : '○'} Dev
+                            </span>
+                            <span className={`px-1 py-0.5 rounded font-mono flex items-center gap-0.5 ${task.featureChecklist.testing ? 'text-amber-400 bg-amber-500/15 border border-amber-500/30' : 'text-fg-subtle bg-well opacity-50'}`}>
+                              {task.featureChecklist.testing ? '✓' : '○'} Test
+                            </span>
+                            <span className={`px-1 py-0.5 rounded font-mono flex items-center gap-0.5 ${task.featureChecklist.deployed ? 'text-emerald-400 bg-emerald-500/15 border border-emerald-500/30' : 'text-fg-subtle bg-well opacity-50'}`}>
+                              {task.featureChecklist.deployed ? '✓' : '○'} Live
+                            </span>
+                          </div>
+                        ) : null}
+
+                        <div className="flex items-center justify-between text-[10px] text-fg-subtle pt-1 border-t border-line/50">
+                          <span>{task.assigneeName || 'Unassigned'}</span>
+                          {task.subtaskCount > 0 ? (
+                            <span className="font-mono bg-well px-1.5 py-0.5 rounded border border-line">
+                              {task.completedSubtaskCount}/{task.subtaskCount} Subtasks
+                            </span>
+                          ) : task.acceptanceCriteria && task.acceptanceCriteria.length > 0 ? (
+                            <span className="font-mono">
+                              {task.acceptanceCriteria.filter((c) => c.done).length}/{task.acceptanceCriteria.length} AC
+                            </span>
+                          ) : null}
+                        </div>
+
+                        <div className="flex items-center justify-between pt-1 mt-1 border-t border-line/40">
+                          {touchMenuTaskId === task.id ? (
+                            <div className="flex flex-wrap gap-1 w-full bg-well p-1 rounded">
+                              {COLUMNS.filter((c) => c.key !== task.column).map((target) => (
+                                <button
+                                  key={target.key}
+                                  type="button"
+                                  disabled={isMoving}
+                                  onClick={(e) => { e.stopPropagation(); executeMove(task.id, target.key); }}
+                                  className="text-[10px] px-1.5 py-0.5 rounded bg-surface hover:bg-hover text-fg border border-line"
+                                >
+                                  → {target.label}
+                                </button>
+                              ))}
                               <button
-                                key={target.key}
                                 type="button"
-                                disabled={isMoving}
-                                onClick={(e) => { e.stopPropagation(); executeMove(task.id, target.key); }}
-                                className="text-[10px] px-1.5 py-0.5 rounded bg-surface hover:bg-hover text-fg border border-line"
+                                onClick={(e) => { e.stopPropagation(); setTouchMenuTaskId(null); }}
+                                className="text-[10px] px-1 text-fg-subtle hover:text-fg"
                               >
-                                → {target.label}
+                                ✕
                               </button>
-                            ))}
+                            </div>
+                          ) : (
                             <button
                               type="button"
-                              onClick={(e) => { e.stopPropagation(); setTouchMenuTaskId(null); }}
-                              className="text-[10px] px-1 text-fg-subtle hover:text-fg"
+                              onClick={(e) => { e.stopPropagation(); setTouchMenuTaskId(task.id); }}
+                              className="text-[10px] text-indigo-400 hover:underline"
                             >
-                              ✕
+                              Move task...
                             </button>
-                          </div>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={(e) => { e.stopPropagation(); setTouchMenuTaskId(task.id); }}
-                            className="text-[10px] text-indigo-400 hover:underline"
-                          >
-                            Move task...
-                          </button>
-                        )}
+                          )}
+                        </div>
                       </div>
-                    </div>
+                      {showDropAfter && (
+                        <div className="h-1 bg-indigo-500 rounded-full shadow-md shadow-indigo-500/50 my-1 animate-pulse transition-all" />
+                      )}
+                    </React.Fragment>
                   );
                 })
                 )}
@@ -462,6 +570,7 @@ export function BoardClient({
           );
         })
         )}
+        </div>
       </div>
 
       {/* Create Task / Subtask Modal */}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { PriorityBadge } from './badges';
 import { Button } from './ui/button';
-// Removed unused lucide-react icons
+import { CheckCircle2 } from 'lucide-react';
 import type { TaskItem } from '../app/(app)/board/board-client';
 
 interface TaskDetailModalProps {
@@ -24,6 +24,31 @@ export function TaskDetailModal({ task, onClose, onDeleted, onUpdate }: TaskDeta
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [checklist, setChecklist] = useState({
+    figma: task.featureChecklist?.figma ?? false,
+    development: task.featureChecklist?.development ?? false,
+    testing: task.featureChecklist?.testing ?? false,
+    deployed: task.featureChecklist?.deployed ?? false,
+  });
+
+  const handleToggleChecklist = async (key: 'figma' | 'development' | 'testing' | 'deployed') => {
+    if (isClient) return;
+    const updated = { ...checklist, [key]: !checklist[key] };
+    setChecklist(updated);
+    if (onUpdate) {
+      onUpdate({ id: task.id, featureChecklist: updated });
+    }
+    try {
+      await fetch(`/api/tasks/${task.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ featureChecklist: updated }),
+      });
+    } catch (err) {
+      console.error(err);
+      setChecklist(checklist);
+    }
+  };
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -151,14 +176,64 @@ export function TaskDetailModal({ task, onClose, onDeleted, onUpdate }: TaskDeta
           </div>
         </div>
 
-        <div className="mb-6 text-sm">
-          <h4 className="text-fg-subtle mb-2">Description</h4>
+        {/* Feature Delivery Stages Checklist */}
+        <div className="mb-6 p-4 rounded-surface border border-line bg-well/50">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-xs font-semibold text-fg uppercase tracking-wider">
+              Feature Delivery Stages
+            </h4>
+            <span className="text-[11px] text-fg-subtle font-mono font-medium">
+              {[checklist.figma, checklist.development, checklist.testing, checklist.deployed].filter(Boolean).length} / 4 Completed
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {[
+              { key: 'figma', label: 'Figma Design', state: checklist.figma, color: 'text-purple-400 bg-purple-500/10 border-purple-500/30' },
+              { key: 'development', label: 'Development', state: checklist.development, color: 'text-blue-400 bg-blue-500/10 border-blue-500/30' },
+              { key: 'testing', label: 'Testing & QA', state: checklist.testing, color: 'text-amber-400 bg-amber-500/10 border-amber-500/30' },
+              { key: 'deployed', label: 'Deployed (Live)', state: checklist.deployed, color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' },
+            ].map(stage => (
+              <button
+                key={stage.key}
+                type="button"
+                disabled={isClient}
+                onClick={() => handleToggleChecklist(stage.key as any)}
+                className={`p-2.5 rounded border text-left flex flex-col justify-between gap-1 transition-all ${
+                  stage.state
+                    ? `${stage.color}`
+                    : 'border-line bg-panel text-fg-subtle opacity-70'
+                } ${isClient ? 'cursor-default' : 'hover:opacity-100 hover:border-line-strong cursor-pointer'}`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold">{stage.label}</span>
+                  {stage.state ? (
+                    <CheckCircle2 className="size-3.5" />
+                  ) : (
+                    <div className="size-3.5 rounded-full border border-line" />
+                  )}
+                </div>
+                <span className="text-[10px] font-mono opacity-80">
+                  {stage.state ? 'Completed' : 'Pending'}
+                </span>
+              </button>
+            ))}
+          </div>
+          {!isClient && (
+            <p className="text-[10px] text-fg-subtle mt-2 italic">
+              Click any stage above to toggle completion for client tracking.
+            </p>
+          )}
+        </div>
+
+        <div className="mb-6 text-sm p-4 rounded-surface border border-line bg-panel">
+          <h4 className="text-xs font-semibold text-fg uppercase tracking-wider mb-2">Feature Description</h4>
           {task.description ? (
-            <div className="text-fg-muted whitespace-pre-wrap leading-relaxed">
+            <div className="text-fg-muted whitespace-pre-wrap leading-relaxed text-sm">
               {task.description}
             </div>
           ) : (
-            <p className="text-fg-subtle italic">No description provided.</p>
+            <p className="text-fg-subtle italic text-sm">No description provided.</p>
           )}
         </div>
 
