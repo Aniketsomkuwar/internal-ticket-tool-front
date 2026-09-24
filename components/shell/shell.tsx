@@ -10,7 +10,7 @@ import { cn } from '../../lib/cn';
 import { Alert } from '../ui/alert';
 import { Button } from '../ui/button';
 import { isActivePath, visibleNavItems } from './nav-items';
-import { PanelLeftClose, PanelLeftOpen, LogOut } from 'lucide-react';
+import { PanelLeftClose, PanelLeftOpen, LogOut, Menu } from 'lucide-react';
 
 /**
  * The application shell (R003).
@@ -71,6 +71,7 @@ export function Shell({ session, children }: ShellProps) {
   const router = useRouter();
 
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [online, setOnline] = useState(true);
   const [signingOut, setSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState<string | null>(null);
@@ -138,11 +139,20 @@ export function Shell({ session, children }: ShellProps) {
 
   return (
     <div className="flex min-h-dvh">
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/50 md:hidden" 
+          onClick={() => setMobileOpen(false)} 
+        />
+      )}
       <aside
         data-collapsed={collapsed ? 'true' : 'false'}
         className={cn(
-          'flex shrink-0 flex-col border-r border-line bg-panel transition-width duration-move ease-standard',
-          collapsed ? 'w-rail-collapsed' : 'w-rail',
+          'flex shrink-0 flex-col border-r border-line bg-panel transition-all duration-move ease-standard',
+          'max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-50 max-md:w-64',
+          mobileOpen ? 'max-md:translate-x-0' : 'max-md:-translate-x-full',
+          collapsed ? 'md:w-rail-collapsed' : 'md:w-rail',
         )}
       >
         <div
@@ -153,7 +163,8 @@ export function Shell({ session, children }: ShellProps) {
         >
           <Link
             href={session.role === 'client' ? '/dashboard' : '/'}
-            className={cn('truncate-text text-md font-semibold text-fg', collapsed && 'hidden')}
+            onClick={() => setMobileOpen(false)}
+            className={cn('truncate-text text-md font-semibold text-fg', collapsed && 'md:hidden lg:block')}
             title="Claim Desk home"
           >
             <span aria-hidden="true">CD</span>
@@ -163,7 +174,7 @@ export function Shell({ session, children }: ShellProps) {
             variant="ghost"
             size="sm"
             className={cn(
-              'p-1.5 flex items-center justify-center',
+              'p-1.5 hidden md:flex items-center justify-center',
               collapsed ? 'size-control-md mx-auto' : 'ml-auto',
             )}
             onClick={toggleRail}
@@ -178,7 +189,7 @@ export function Shell({ session, children }: ShellProps) {
         <nav
           id="shell-rail-nav"
           aria-label="Main"
-          className={cn('flex flex-col gap-1', collapsed ? 'p-1.5 items-center' : 'p-2')}
+          className={cn('flex flex-col gap-1', collapsed ? 'p-1.5 md:items-center max-md:p-2' : 'p-2')}
         >
           {items.map((item) => {
             const active = isActivePath(item.href, pathname);
@@ -189,10 +200,11 @@ export function Shell({ session, children }: ShellProps) {
                 href={item.href}
                 aria-current={active ? 'page' : undefined}
                 title={collapsed ? item.label : undefined}
+                onClick={() => setMobileOpen(false)}
                 className={cn(
                   'flex min-h-control-md items-center rounded-control text-sm transition-colors duration-exit',
                   collapsed
-                    ? 'w-full justify-center px-0'
+                    ? 'w-full md:justify-center px-0 max-md:gap-control max-md:px-2'
                     : 'gap-control px-2',
                   active
                     ? 'bg-selected font-medium text-fg'
@@ -210,7 +222,7 @@ export function Shell({ session, children }: ShellProps) {
                 </span>
                 {/* Never removed from the accessibility tree: collapsed, the
                     accessible name must not disappear with the pixels. */}
-                <span className={cn('truncate-text', collapsed && 'sr-only')}>{item.label}</span>
+                <span className={cn('truncate-text', collapsed && 'md:sr-only')}>{item.label}</span>
               </Link>
             );
           })}
@@ -241,10 +253,19 @@ export function Shell({ session, children }: ShellProps) {
         ) : null}
 
         <header className="flex h-topbar items-center gap-sibling border-b border-line bg-panel px-4">
-          <p className="uppercase-label">{session.roleLabel}</p>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="p-1 md:hidden mr-2 -ml-2" 
+            onClick={() => setMobileOpen(true)}
+            aria-label="Open mobile navigation"
+          >
+            <Menu className="size-5" />
+          </Button>
+          <p className="uppercase-label hidden sm:block">{session.roleLabel}</p>
 
           <div className="ml-auto flex min-w-0 items-center gap-control">
-            <div className="flex min-w-0 flex-col items-end leading-tight">
+            <div className="hidden sm:flex min-w-0 flex-col items-end leading-tight">
               <span className="truncate-text max-w-full text-sm font-medium text-fg" title={session.name}>
                 {session.name}
               </span>

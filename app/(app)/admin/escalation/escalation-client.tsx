@@ -125,7 +125,7 @@ export function EscalationClient({ initialRules }: { initialRules: EscalationRul
         </div>
       </div>
 
-      <div className="rounded-surface border border-line bg-panel overflow-hidden">
+      <div className="rounded-surface border border-line bg-panel overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-line bg-well text-xs uppercase text-fg-subtle">
             <tr>

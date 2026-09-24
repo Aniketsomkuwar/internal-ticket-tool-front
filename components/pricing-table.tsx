@@ -42,7 +42,7 @@ export function PricingTable({ items, totalFormatted, isClientView = false }: Pr
           This project has no recorded monthly running costs yet.
         </div>
       ) : (
-        <div className="border border-line rounded-well overflow-hidden">
+        <div className="border border-line rounded-well overflow-x-auto">
           <table className="w-full text-left text-xs divide-y divide-line">
             <thead className="bg-well text-fg-muted uppercase-label">
               <tr>
