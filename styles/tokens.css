@@ -44,14 +44,22 @@
   /* ------------------------------------------------------------ Type scale */
   /* 11 / 12 / 13 / 14 / 16 / 20 / 26 / 32. Adjacent roles never sit closer
    * than about 1.15x, so hierarchy reads instead of requiring comparison. */
-  --font-size-2xs: 11px; /* uppercase micro labels only */
-  --font-size-xs: 12px; /* metadata, timestamps, table meta */
-  --font-size-sm: 13px; /* table cells, dense controls */
-  --font-size-base: 14px; /* body */
-  --font-size-md: 16px; /* lead paragraph, dialog titles */
-  --font-size-lg: 20px; /* section heading */
-  --font-size-xl: 26px; /* page heading */
-  --font-size-2xl: 32px; /* sign-in screen only */
+  --font-size-2xs: 11px;
+  /* uppercase micro labels only */
+  --font-size-xs: 12px;
+  /* metadata, timestamps, table meta */
+  --font-size-sm: 13px;
+  /* table cells, dense controls */
+  --font-size-base: 14px;
+  /* body */
+  --font-size-md: 16px;
+  /* lead paragraph, dialog titles */
+  --font-size-lg: 20px;
+  /* section heading */
+  --font-size-xl: 26px;
+  /* page heading */
+  --font-size-2xl: 32px;
+  /* sign-in screen only */
 
   /* Never below 1.3 for body copy; 1.65 for long-form text such as ticket
    * messages and help text. */
@@ -84,29 +92,43 @@
 
   /* The same 16px means different things at different scopes; naming the scope
    * keeps that visible instead of inviting drift. */
-  --gap-control: var(--space-2); /* between a label and its input */
-  --gap-sibling: var(--space-4); /* between items in a list or row */
-  --gap-group: var(--space-6); /* between labelled groups in a panel */
-  --gap-section: var(--space-12); /* between major sections of a page */
+  --gap-control: var(--space-2);
+  /* between a label and its input */
+  --gap-sibling: var(--space-4);
+  /* between items in a list or row */
+  --gap-group: var(--space-6);
+  /* between labelled groups in a panel */
+  --gap-section: var(--space-12);
+  /* between major sections of a page */
 
-  --control-height-sm: 28px; /* dense table controls */
-  --control-height-md: 36px; /* default */
-  --control-height-lg: 44px; /* sign-in and touch targets */
+  --control-height-sm: 28px;
+  /* dense table controls */
+  --control-height-md: 36px;
+  /* default */
+  --control-height-lg: 44px;
+  /* sign-in and touch targets */
 
   /* ------------------------------------------------------------- Structure */
   /* Fixed furniture. The shell rail and top bar are the two lengths a layout
    * component would otherwise hardcode, and a hardcoded 15rem in the shell is
    * exactly the value the table and page rhythm have to agree with. */
-  --rail-width: 15rem; /* expanded navigation rail */
-  --rail-width-collapsed: 3.25rem; /* icon-only rail */
-  --topbar-height: 3.25rem; /* aligns with the collapsed rail */
+  --rail-width: 15rem;
+  /* expanded navigation rail */
+  --rail-width-collapsed: 3.25rem;
+  /* icon-only rail */
+  --topbar-height: 3.25rem;
+  /* aligns with the collapsed rail */
 
   /* ---------------------------------------------------------------- Radius */
   /* Mapped to element class, not to taste. */
-  --corner-control: 4px; /* inputs, badges, tags */
-  --corner-surface: 6px; /* buttons, cards, panels */
-  --corner-overlay: 10px; /* dialogs, popovers */
-  --corner-pill: 9999px; /* avatars, spinners */
+  --corner-control: 4px;
+  /* inputs, badges, tags */
+  --corner-surface: 6px;
+  /* buttons, cards, panels */
+  --corner-overlay: 10px;
+  /* dialogs, popovers */
+  --corner-pill: 9999px;
+  /* avatars, spinners */
 
   /* ------------------------------------------------------------- Elevation */
   /* Hairline borders do most of the separating; a shadow is for something that
@@ -128,32 +150,47 @@
   --spin-animation: cd-spin var(--spin-duration) linear infinite;
 
   /* -------------------------------------------------------------- Surfaces */
-  --surface-page: #f6f7f9; /* page ground */
-  --surface-raised: #ffffff; /* panels, tables, dialogs */
-  --surface-sunken: #eceff3; /* table striping, inline code, wells */
-  --surface-hover: #f1f3f7; /* row hover */
-  --surface-selected: #e8f0fb; /* active nav item, selected row */
-  --surface-overlay: rgb(15 21 28 / 0.55); /* dialog scrim */
+  --surface-page: #f6f7f9;
+  /* page ground */
+  --surface-raised: #ffffff;
+  /* panels, tables, dialogs */
+  --surface-sunken: #eceff3;
+  /* table striping, inline code, wells */
+  --surface-hover: #f1f3f7;
+  /* row hover */
+  --surface-selected: #e8f0fb;
+  /* active nav item, selected row */
+  --surface-overlay: rgb(15 21 28 / 0.55);
+  /* dialog scrim */
 
-  --border-subtle: #e3e6eb; /* row divider */
-  --border-default: #ced3db; /* control boundary */
-  --border-strong: #98a2b3; /* active boundary */
+  --border-subtle: #e3e6eb;
+  /* row divider */
+  --border-default: #ced3db;
+  /* control boundary */
+  --border-strong: #98a2b3;
+  /* active boundary */
 
-  --text-primary: #141a21; /* body */
-  --text-secondary: #4a5560; /* secondary */
-  --text-muted: #616a75; /* metadata - the lightest permitted for anything a user must read */
+  --text-primary: #141a21;
+  /* body */
+  --text-secondary: #4a5560;
+  /* secondary */
+  --text-muted: #616a75;
+  /* metadata - the lightest permitted for anything a user must read */
   --text-link: #1a45c0;
   --text-on-accent: #ffffff;
 
   /* ----------------------------------------------------------------- Accent */
   /* One accent, two jobs only: primary action and focus. Never decoration,
    * never status, never emphasis. */
-  --accent-subtle: #eaf0fd; /* tinted ground behind an accent surface */
-  --accent-muted: #b9cdf6; /* selection and chart fills */
+  --accent-subtle: #eaf0fd;
+  /* tinted ground behind an accent surface */
+  --accent-muted: #b9cdf6;
+  /* selection and chart fills */
   --accent-default: #1d4ed8;
   --accent-hover: #1a45c0;
   --accent-active: #163a9f;
-  --accent-fg: var(--text-on-accent); /* text drawn on the accent */
+  --accent-fg: var(--text-on-accent);
+  /* text drawn on the accent */
 
   /* ----------------------------------------------------------------- Status */
   /* Five families, each with its own foreground, background and border so
@@ -164,27 +201,32 @@
   --status-new-fg: #0b5a6b;
   --status-new-bg: #e6f4f7;
   --status-new-border: #b7dbe3;
-  --status-new-glyph: '\25CB'; /* hollow circle */
+  --status-new-glyph: '\25CB';
+  /* hollow circle */
 
   --status-in-progress-fg: #8a4b08;
   --status-in-progress-bg: #fdf3e3;
   --status-in-progress-border: #e8cfa4;
-  --status-in-progress-glyph: '\25D0'; /* half-filled circle */
+  --status-in-progress-glyph: '\25D0';
+  /* half-filled circle */
 
   --status-resolved-fg: #146c36;
   --status-resolved-bg: #e8f5ec;
   --status-resolved-border: #b7dfc6;
-  --status-resolved-glyph: '\2713'; /* check mark */
+  --status-resolved-glyph: '\2713';
+  /* check mark */
 
   --status-closed-fg: #475467;
   --status-closed-bg: #f1f3f6;
   --status-closed-border: #d3d8e0;
-  --status-closed-glyph: '\25A0'; /* filled square */
+  --status-closed-glyph: '\25A0';
+  /* filled square */
 
   --status-escalated-fg: #9e2418;
   --status-escalated-bg: #fdecea;
   --status-escalated-border: #f0c2bb;
-  --status-escalated-glyph: '\25B2'; /* filled triangle */
+  --status-escalated-glyph: '\25B2';
+  /* filled triangle */
 
   /* --------------------------------------------------------------- Priority */
   /* A priority is a severity on the same scale as a status, so priority borrows
@@ -255,92 +297,134 @@
 }
 
 /*
- * Dark. Authored here on its own terms: lightened accent, re-tuned status pairs,
- * weaker shadows. `app/layout.tsx` sets `data-theme` on <html> before first
+ * Dark. Authored here on its own terms: warm obsidian surfaces, warm-white
+ * typography, restrained brass accent, re-tuned status pairs and lighter
+ * elevation cues. `app/layout.tsx` sets `data-theme` on <html> before first
  * paint, so this block is the only dark palette in the product.
  */
+
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --surface-page: #0e1116;
-  --surface-raised: #161b22;
-  --surface-sunken: #0a0d12;
-  --surface-hover: #1c222b;
-  --surface-selected: #1d2c3f;
-  --surface-overlay: rgb(3 6 10 / 0.7);
+  /*
+   * ---------------------------------------------------------------- Surfaces
+   *
+   * The previous dark palette was cooler and more blue/technical.
+   * This palette moves the entire interface toward warm charcoal while
+   * keeping enough luminance separation between the page and raised panels.
+   */
+  --surface-page: #11110f;
+  --surface-raised: #191917;
+  --surface-sunken: #0c0c0b;
+  --surface-hover: #22211d;
+  --surface-selected: #29261f;
+  --surface-overlay: rgb(7 7 6 / 0.72);
 
-  --border-subtle: #232a33;
-  --border-default: #333d49;
-  --border-strong: #55616f;
+  /*
+   * --------------------------------------------------------------- Borders
+   *
+   * Warm neutral borders rather than blue-grey borders.
+   */
+  --border-subtle: #292824;
+  --border-default: #39362f;
+  --border-strong: #514d43;
 
-  --text-primary: #e7eaef;
-  --text-secondary: #b0b8c2;
-  --text-muted: #8d97a4; /* lightened from the light-mode value: metadata sits on near-black ground, and the accent-tinted selected row is lighter still */
-  --text-link: #7fb0e8;
-  --text-on-accent: #0b1620;
+  /*
+   * ----------------------------------------------------------------- Text
+   *
+   * Warm whites keep the dark UI brighter without introducing a harsh
+   * pure-white contrast.
+   */
+  --text-primary: #eeeae1;
+  --text-secondary: #b2aea5;
+  --text-muted: #7d7971;
+  --text-link: #d0a866;
+  --text-on-accent: #18140d;
 
-  /* The accent lightens on dark so it holds contrast against a near-black
-   * ground. */
-  --accent-subtle: #14283e;
-  --accent-muted: #2c4d70;
-  --accent-default: #5b9be0;
-  --accent-hover: #74aae6;
-  --accent-active: #4a8ad0;
+  /*
+   * ----------------------------------------------------------------- Accent
+   *
+   * Brass is the single dark-theme accent. It is reserved for primary
+   * actions, focus and selected interaction states - never for status.
+   */
+  --accent-subtle: #29241a;
+  --accent-muted: #8f7549;
+  --accent-default: #d0a866;
+  --accent-hover: #dfb979;
+  --accent-active: #b88e4e;
   --accent-fg: var(--text-on-accent);
 
-  --status-new-fg: #6fc7d8;
-  --status-new-bg: #0d2630;
-  --status-new-border: #1f4553;
+  /*
+   * ----------------------------------------------------------------- Status
+   *
+   * Status colours remain distinct from the brass accent. Backgrounds are
+   * intentionally restrained so the table does not become a wall of colour.
+   */
 
-  --status-in-progress-fg: #e0a45e;
-  --status-in-progress-bg: #2b1e0a;
-  --status-in-progress-border: #57401a;
+  --status-new-fg: #8db9c4;
+  --status-new-bg: #172125;
+  --status-new-border: #31454a;
 
-  --status-resolved-fg: #6fc48d;
-  --status-resolved-bg: #0d2418;
-  --status-resolved-border: #1e4630;
+  --status-in-progress-fg: #d6ad65;
+  --status-in-progress-bg: #292219;
+  --status-in-progress-border: #51432b;
 
-  --status-closed-fg: #9aa4b1;
-  --status-closed-bg: #1c2128;
-  --status-closed-border: #333c46;
+  --status-resolved-fg: #82b58f;
+  --status-resolved-bg: #18231b;
+  --status-resolved-border: #304b37;
 
-  --status-escalated-fg: #ef8b7c;
-  --status-escalated-bg: #2d1512;
-  --status-escalated-border: #5c2c26;
+  --status-closed-fg: #aaa69d;
+  --status-closed-bg: #20201d;
+  --status-closed-border: #383733;
 
-  --feedback-info-fg: #7fb0e8;
-  --feedback-info-bg: #101f33;
-  --feedback-info-border: #274366;
+  --status-escalated-fg: #d47d70;
+  --status-escalated-bg: #291b19;
+  --status-escalated-border: #50302c;
 
-  --feedback-success-fg: #6fc48d;
-  --feedback-success-bg: #0d2418;
-  --feedback-success-border: #1e4630;
+  /*
+   * --------------------------------------------------------------- Feedback
+   */
 
-  --feedback-warning-fg: #e0a45e;
-  --feedback-warning-bg: #2b1e0a;
-  --feedback-warning-border: #57401a;
+  --feedback-info-fg: #9bbdcc;
+  --feedback-info-bg: #172125;
+  --feedback-info-border: #31454a;
 
-  --feedback-danger-fg: #ef8b7c;
-  --feedback-danger-bg: #2d1512;
-  --feedback-danger-border: #5c2c26;
+  --feedback-success-fg: #82b58f;
+  --feedback-success-bg: #18231b;
+  --feedback-success-border: #304b37;
 
-  --feedback-danger-solid: #c93d34;
-  --feedback-danger-solid-hover: #d95a50;
-  --feedback-danger-solid-active: #ac3129;
+  --feedback-warning-fg: #d6ad65;
+  --feedback-warning-bg: #292219;
+  --feedback-warning-border: #51432b;
+
+  --feedback-danger-fg: #d47d70;
+  --feedback-danger-bg: #291b19;
+  --feedback-danger-border: #50302c;
+
+  --feedback-danger-solid: #c9695d;
+  --feedback-danger-solid-hover: #d77a6e;
+  --feedback-danger-solid-active: #b4574d;
   --feedback-danger-on-solid: #ffffff;
 
-  /* Shadows weaken on dark: a lighter surface already carries the elevation
-   * cue, and a soft dark shadow on a dark ground reads as mud. */
-  --elevation-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
-  --elevation-md: 0 4px 10px -2px rgb(0 0 0 / 0.5);
-  --elevation-lg: 0 14px 32px -10px rgb(0 0 0 / 0.6);
+  /*
+   * ---------------------------------------------------------- Elevation
+   *
+   * The brighter raised surfaces already communicate hierarchy, so shadows
+   * remain soft and understated rather than creating muddy black halos.
+   */
+  --elevation-sm: 0 1px 2px 0 rgb(0 0 0 / 0.32);
+  --elevation-md: 0 4px 10px -2px rgb(0 0 0 / 0.38);
+  --elevation-lg: 0 14px 32px -10px rgb(0 0 0 / 0.46);
 }
 
-/* A glyph is decoration on top of a written label, so it is bound here as
+/*
+ * A glyph is decoration on top of a written label, so it is bound here as
  * `content` rather than spelled inside a component: the character exists once,
  * in the token layer, and a component names the status it is showing.
  *
- * `1em` keeps the glyph on the same optical width as the text beside it. */
+ * `1em` keeps the glyph on the same optical width as the text beside it.
+ */
+
 .glyph {
   display: inline-block;
   width: 1em;
@@ -356,44 +440,57 @@
 [data-glyph='new']::before {
   content: var(--status-new-glyph);
 }
+
 [data-glyph='in-progress']::before {
   content: var(--status-in-progress-glyph);
 }
+
 [data-glyph='resolved']::before {
   content: var(--status-resolved-glyph);
 }
+
 [data-glyph='closed']::before {
   content: var(--status-closed-glyph);
 }
+
 [data-glyph='escalated']::before {
   content: var(--status-escalated-glyph);
 }
+
 [data-glyph='p1']::before {
   content: var(--priority-p1-glyph);
 }
+
 [data-glyph='p2']::before {
   content: var(--priority-p2-glyph);
 }
+
 [data-glyph='p3']::before {
   content: var(--priority-p3-glyph);
 }
+
 [data-glyph='p4']::before {
   content: var(--priority-p4-glyph);
 }
+
 [data-glyph='info']::before {
   content: var(--feedback-info-glyph);
 }
+
 [data-glyph='success']::before {
   content: var(--feedback-success-glyph);
 }
+
 [data-glyph='warning']::before {
   content: var(--feedback-warning-glyph);
 }
+
 [data-glyph='danger']::before {
   content: var(--feedback-danger-glyph);
 }
 
 /* One looping animation, and the keyframes it needs. */
+
 @keyframes cd-spin {
   to {
     transform: rotate(360deg);
@@ -408,6 +505,7 @@
  * loop is the one motion a preference for reduced motion is asking about - while
  * `aria-busy` and the written loading label keep carrying the state.
  */
+
 @media (prefers-reduced-motion: reduce) {
   :root {
     --dur-exit: 1ms;
@@ -419,6 +517,7 @@
 
 /* Focus is never removed, only styled: 2px ring at 2px offset, globally. Mouse
  * users do not get the ring; the element still receives focus. */
+
 :focus-visible {
   outline: var(--focus-ring-width) solid var(--focus-ring);
   outline-offset: var(--focus-ring-offset);

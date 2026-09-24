@@ -7,6 +7,7 @@ import { StatusBadge, PriorityBadge } from '../../../components/badges';
 import { Button } from '../../../components/ui/button';
 import { Select } from '../../../components/ui/select';
 import { Alert } from '../../../components/ui/alert';
+import { Sparkles } from 'lucide-react';
 import { type Priority } from '@/shared/index';
 
 export interface ConsoleTicketItem {
@@ -69,8 +70,36 @@ export function ConsoleClient({
   const [bulkPriority, setBulkPriority] = useState<Priority>('P1');
   const [isBulkActing, setIsBulkActing] = useState(false);
 
+  // AI Task Conversion state
+  const [isConvertingTask, setIsConvertingTask] = useState(false);
+
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  const handleAiConvertTask = async () => {
+    if (!selectedTicket) return;
+    setIsConvertingTask(true);
+    setErrorMsg(null);
+    setSuccessMsg(null);
+
+    try {
+      const res = await fetch(`/api/tickets/${selectedTicket.id}/convert-to-task`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || 'Failed to convert ticket to task');
+      }
+      const data = await res.json();
+      setSuccessMsg(`✨ Task "${data.task.title}" created in Backlog!`);
+      router.refresh();
+    } catch (err: any) {
+      setErrorMsg(err.message);
+    } finally {
+      setIsConvertingTask(false);
+    }
+  };
 
   const toggleSelect = (id: string) => {
     const next = new Set(selectedIds);
@@ -333,6 +362,18 @@ export function ConsoleClient({
                     Escalate
                   </Button>
                 ) : null}
+
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleAiConvertTask}
+                  disabled={isConvertingTask}
+                  className="gap-1.5 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/30"
+                  title="Create engineering task with AI and place in project Backlog"
+                >
+                  <Sparkles className={`size-3.5 ${isConvertingTask ? 'animate-spin' : ''}`} />
+                  {isConvertingTask ? 'Creating Task...' : 'Create Task (AI)'}
+                </Button>
 
                 <Link href={`/portal/${selectedTicket.reference}`}>
                   <Button variant="ghost" size="sm">Full Thread ↗</Button>
