@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ROLES, ROLE_LABELS, type Role, type CustomRoleDTO } from '@/shared/index';
+import { ROLES, ROLE_LABELS, type Role, type CustomRoleDTO } from '../../../../shared';
 import { Button } from '../../../../components/ui/button';
 import { Input } from '../../../../components/ui/input';
 import { Select } from '../../../../components/ui/select';

@@ -6,7 +6,7 @@ import { Button } from '../../../../components/ui/button';
 import { Select } from '../../../../components/ui/select';
 import { Input } from '../../../../components/ui/input';
 import { Alert } from '../../../../components/ui/alert';
-import { ROLES, ROLE_LABELS, type Role } from '@/shared/index';
+import { ROLES, ROLE_LABELS, type Role } from '../../../../shared';
 
 export interface EscalationRuleItem {
   _id: string;
