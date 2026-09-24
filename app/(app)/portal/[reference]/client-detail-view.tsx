@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Paperclip, Sparkles } from 'lucide-react';
+import { Paperclip } from 'lucide-react';
 import { StatusBadge, PriorityBadge } from '../../../../components/badges';
 import { Button } from '../../../../components/ui/button';
 import { Alert } from '../../../../components/ui/alert';
@@ -60,36 +60,18 @@ export function ClientDetailView({ ticket, userKind }: { ticket: TicketDetailDat
   const [showReopenModal, setShowReopenModal] = useState(false);
   const [isReopening, setIsReopening] = useState(false);
 
-  // AI Task Conversion state (Staff/Admin only)
-  const [isConvertingTask, setIsConvertingTask] = useState(false);
+  // Task Conversion state (Staff/Admin only)
+  const [comingSoon, setComingSoon] = useState(false);
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const isStaffOrAdmin = userKind !== 'client';
 
-  const handleAiConvertTask = async () => {
-    setIsConvertingTask(true);
-    setErrorMsg(null);
-    setSuccessMsg(null);
-
-    try {
-      const res = await fetch(`/api/tickets/${ticket.id}/convert-to-task`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || 'Failed to convert ticket to task');
-      }
-      const data = await res.json();
-      setSuccessMsg(`✨ Task "${data.task.title}" successfully created and placed in the project Backlog!`);
-      router.refresh();
-    } catch (err: any) {
-      setErrorMsg(err.message);
-    } finally {
-      setIsConvertingTask(false);
-    }
+  const handleCreateTaskClick = () => {
+    setComingSoon(true);
+    setSuccessMsg('Coming soon: Direct task creation from tickets will be available soon.');
+    setTimeout(() => setComingSoon(false), 3000);
   };
 
   const handlePostComment = async (e: React.FormEvent) => {
@@ -207,30 +189,31 @@ export function ClientDetailView({ ticket, userKind }: { ticket: TicketDetailDat
           </div>
         ) : null}
 
-        {/* AI Task Creation Bar (Internal Staff / Admin Only) */}
+        {/* Task Creation Bar (Internal Staff / Admin Only) */}
         {isStaffOrAdmin ? (
-          <div className="rounded border border-indigo-500/20 bg-indigo-500/5 p-3.5 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <div className="rounded p-1.5 bg-indigo-500/10 text-indigo-400">
-                <Sparkles className="size-4" />
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-fg">Engineering Task Conversion</p>
-                <p className="text-[11px] text-fg-subtle">
-                  Transform this customer ticket into a structured engineering task placed into the project Backlog using AI.
-                </p>
-              </div>
+          <div className="rounded border border-line bg-well p-3.5 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold text-fg">Engineering Task Conversion</p>
+              <p className="text-[11px] text-fg-subtle">
+                Convert this customer ticket into a structured engineering backlog task.
+              </p>
             </div>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleAiConvertTask}
-              disabled={isConvertingTask}
-              className="gap-1.5 shrink-0 bg-indigo-600 hover:bg-indigo-500 text-white font-medium"
-            >
-              <Sparkles className={`size-3.5 ${isConvertingTask ? 'animate-spin' : ''}`} />
-              {isConvertingTask ? 'Creating Task with AI...' : 'Create Task with AI'}
-            </Button>
+            <div className="flex items-center gap-2">
+              {comingSoon && (
+                <span className="text-xs font-medium text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded">
+                  Coming soon
+                </span>
+              )}
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleCreateTaskClick}
+                className="shrink-0 opacity-70 hover:opacity-100"
+                title="Coming soon"
+              >
+                {comingSoon ? 'Coming soon' : 'Create Task'}
+              </Button>
+            </div>
           </div>
         ) : null}
 
