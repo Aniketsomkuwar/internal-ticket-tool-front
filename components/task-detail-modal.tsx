@@ -23,7 +23,7 @@ export function TaskDetailModal({ task, onClose, onDeleted, onUpdate }: TaskDeta
   const [subtasks, setSubtasks] = useState<TaskItem[] | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState(true);
   const [checklist, setChecklist] = useState({
     figma: task.featureChecklist?.figma ?? false,
     development: task.featureChecklist?.development ?? false,

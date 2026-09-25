@@ -133,5 +133,8 @@ export function isActivePath(href: string, pathname: string): boolean {
   if (href === '/portal') {
     return pathname === '/portal' || (pathname.startsWith('/portal/') && !pathname.startsWith('/portal/project'));
   }
+  if (href === '/admin') {
+    return pathname === '/admin';
+  }
   return pathname === href || pathname.startsWith(`${href}/`);
 }

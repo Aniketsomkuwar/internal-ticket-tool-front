@@ -62,7 +62,7 @@ export function RoadmapList({ roadmap }: RoadmapListProps) {
         {icon}
         {title}
       </h3>
-      <div className="flex flex-col gap-3 relative">
+      <div className="flex flex-col gap-3 relative max-h-[500px] overflow-y-auto pr-1">
         {tasks.length > 0 ? (
           tasks.map(t => (
             <button
