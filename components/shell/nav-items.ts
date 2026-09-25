@@ -61,8 +61,8 @@ export function visibleNavItems(
     const hasPermission = item.permission === null || permissions.includes(item.permission);
     if (!hasPermission) return false;
 
-    // Hide Service Health and Events for all users for now
-    if (item.href === '/services' || item.href === '/events') {
+    // Hide Service Health, Events, and Watchtower for all users for now
+    if (item.href === '/services' || item.href === '/events' || item.href === '/watchtower') {
       return false;
     }
 
